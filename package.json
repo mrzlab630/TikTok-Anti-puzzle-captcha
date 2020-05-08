@@ -1,0 +1,18 @@
+{
+  "name": "fc-captcha",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "opencv4nodejs": "^5.5.0",
+    "puppeteer": "^3.0.4"
+  }
+}
