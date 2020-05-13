@@ -2,9 +2,13 @@
   "name": "fc-captcha",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "dev:build": "cross-env NODE_ENV=development webpack --mode development --config ./webpack.config.js",
+    "build:babel": "babel src/index.js -d dist",
+    "dev:start": "node ./src/index.js",
+    "start": "yarn dev:build && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,6 +17,19 @@
   "dependencies": {
     "node-fetch": "^2.6.0",
     "opencv4nodejs": "^5.5.0",
-    "puppeteer": "^3.0.4"
+    "puppeteer": "^3.0.4",
+    "util": "^0.12.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/polyfill": "^7.8.7",
+    "@babel/preset-env": "^7.9.6",
+    "babel-loader": "^8.1.0",
+    "cross-env": "^7.0.2",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
   }
 }
