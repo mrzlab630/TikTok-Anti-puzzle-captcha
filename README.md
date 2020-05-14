@@ -11,7 +11,7 @@
 
 <br>
 
-## Development
+## Info
 
 work in progress, for any questions, write to me
 
