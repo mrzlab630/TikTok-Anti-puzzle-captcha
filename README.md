@@ -3,7 +3,9 @@
 <br>
 
 <br>
-[![preview](https://github.com/mrzlab630/TikTok-Anti-puzzle-captcha/blob/master/doc/fcCaptcha.gif?raw=true)](https://youtu.be/PyzIGpAQEts)
+
+[![preview](https://raw.githubusercontent.com/mrzlab630/TikTok-Anti-puzzle-captcha/master/doc/fcCaptcha.gif)](https://youtu.be/PyzIGpAQEts)
+
 
 <br>
 
