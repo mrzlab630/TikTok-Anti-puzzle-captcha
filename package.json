@@ -1,8 +1,7 @@
 {
   "name": "fc-captcha",
-  "version": "1.0.0",
-  "description": "",
-  "private": true,
+  "version": "1.1.0",
+  "description": "TikTok Anti puzzle captcha",
   "main": "index.js",
   "scripts": {
     "dev:build": "cross-env NODE_ENV=development webpack --mode development --config ./webpack.config.js",
@@ -11,9 +10,18 @@
     "start": "yarn dev:build && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "anti captcha",
+    "anticaptcha",
+    "anti puzzle captcha",
+    "TikTok"
+  ],
+  "author": "mrZLab630 <mrz@mrzlab630.pw>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrzlab630/TikTok-Anti-puzzle-captcha.git"
+  },
   "dependencies": {
     "node-fetch": "^2.6.0",
     "opencv4nodejs": "^5.5.0",

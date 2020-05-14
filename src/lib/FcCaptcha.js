@@ -4,7 +4,7 @@
  * Email: mrZ@mrZLab630pw
  * Date: 12.05.2020
  * Time: 13:14
- * About:
+ * About: TikTok Anti puzzle captcha
  *
  */
 const path = require('path')
@@ -23,19 +23,21 @@ class FcCaptcha
             {
 
 
-                constructor(debag,agent) {
+                constructor(agent,debag,testPage) {
                     this.browser
                     this.page
 
                     this.streamPipeline = util.promisify(require('stream').pipeline)
 
-                    this.debag = !debag;
+                    this.testPage = testPage
+                    // this.bazeUrl = 'https://s0.ipstatp.com/sec-sdk/secsdk-captcha/2.8.8/index.html'
+                    this.debag = !debag
                     this.agent = agent ? agent.toLowerCase() : 'pc'
                     this.userAgent = {
                         pc:`Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36`,
                         mobile:`Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0. 3396.81 Mobile Safari/537.36`
                     }
-                    this.bazeUrl = 'https://s0.ipstatp.com/sec-sdk/secsdk-captcha/2.8.8/index.html'
+
                 }
 
 
@@ -149,7 +151,10 @@ class FcCaptcha
                         return imgContours || false
 
                     } catch (e) {
+
                         console.error(e)
+
+                        return e
                     }
                 }
 
@@ -176,13 +181,55 @@ class FcCaptcha
                         return true
 
                     }catch (e) {
+
                         console.error(e)
+
+                        return e
                     }
                 }
 
                 async delay(time = 0)
                 {
                     await new Promise(r => setTimeout(r, time));
+                }
+
+                getFiles()
+                {
+                    try{
+
+                        if(!dir || typeof dir !== 'string'){
+                            throw new Error('dir has no found')
+                        }
+
+                        if(!fileType || typeof fileType !== 'string'){
+                            throw new Error('fileType has no found')
+                        }
+
+                        const  filesAll = fs.readdirSync(dir);
+
+                        const files = []
+
+                        filesAll.forEach(itm =>{
+                            const filePath = path.join(dir, itm)
+
+                            const stat = fs.statSync(filePath)
+
+                            if (stat.isFile() && path.extname(itm) === `.${fileType}`) {
+                                files.push(itm)
+                            }
+
+                        })
+
+
+
+                        console.log(files)
+
+                        return files
+
+                    }catch (e) {
+                        console.log(e)
+                       return e
+                    }
                 }
 
                 randomInteger(min, max)
@@ -193,30 +240,37 @@ class FcCaptcha
 
                 async initPuppeter()
                 {
+                    try {
 
-                    this.browser = await puppeteer.launch({
-                        headless: this.debag,
-                        devtools: false
-                    })
-                    this.page = await this.browser.newPage()
-                    await this.page.setUserAgent(this.userAgent[this.agent]);
+                        this.browser = await puppeteer.launch({
+                            headless: this.debag,
+                            devtools: false
+                        })
+                        this.page = await this.browser.newPage()
+                        await this.page.setUserAgent(this.userAgent[this.agent]);
 
-                    await this.page.setRequestInterception(true);
+                        await this.page.setRequestInterception(true);
 
-                    this.page.on('request', (req) => {
+                        this.page.on('request', (req) => {
 
-                        /*
-                        if( req.resourceType() == 'font' || req.resourceType() == 'image'){
-                            req.abort()
-                        }
-                        else {
+                            /*
+                            if( req.resourceType() == 'font' || req.resourceType() == 'image'){
+                                req.abort()
+                            }
+                            else {
+                                req.continue()
+                            }
+
+                             */
                             req.continue()
-                        }
+                        })
 
-                         */
-                        req.continue()
-                    })
+                    }catch (e) {
 
+                        console.log(e)
+
+                        return e
+                    }
                 }
 
                 async closeBrowser()
@@ -234,13 +288,94 @@ class FcCaptcha
                     return  await this.page.$$eval(selector, nodes => nodes.map(n => n.innerText))
                 }
 
+                async mouseMove(dragXstart,dragYstart,dragXfin,dragYfin)
+                {
+                    try{
+
+                        if(!dragXstart){
+                            throw new Error(`X start position is not defined`)
+                        }
+
+                        if(!dragYstart){
+                            throw new Error(`Y start position is not defined`)
+                        }
+
+                        if(!dragXfin){
+                            throw new Error(`X finish position is not defined`)
+                        }
+
+                        if(!dragYfin){
+                            throw new Error(`Y finish position is not defined`)
+                        }
+
+
+                        const finXposition = dragXstart + dragXfin
+
+                        await this.page.mouse.move(dragXstart, dragYstart)
+                        await this.page.mouse.down()
+
+
+                        for (let i = 0; i < dragXfin; i++) {
+
+                            const moveIX = dragXstart + i
+
+                            const delayMove = this.randomInteger(2, 15)
+
+                            await this.delay(delayMove)
+
+                            await this.page.mouse.move( moveIX, dragYstart)
+
+                        }
+
+
+                        await this.delay(7)
+                        await this.page.mouse.move( finXposition + 1, dragYfin)
+
+                        await this.delay(7)
+                        await this.page.mouse.move( finXposition + 2, dragYfin)
+
+                        await this.delay(7)
+                        await this.page.mouse.move( finXposition + 2, dragYfin)
+
+                        await this.delay(this.randomInteger(95, 120))
+                        await this.page.mouse.move( finXposition + 3, dragYfin)
+
+                        await this.delay(this.randomInteger(950, 1206))
+                        await this.page.mouse.move( finXposition + 4, dragYfin)
+
+                        await this.delay(32)
+                        await this.page.mouse.move( finXposition + 5, dragYfin)
+
+                        await this.delay(32)
+                        await this.page.mouse.move( finXposition + 5, dragYfin)
+
+                        await this.delay(47)
+                        await this.page.mouse.move( finXposition + 6, dragYfin)
+
+                        await this.delay(this.randomInteger(360, 425))
+                        await this.page.mouse.move( finXposition + this.randomInteger(5, 9), dragYfin)
+
+                        await this.page.mouse.up()
+
+
+                    }catch (e) {
+                        console.log(e)
+                        return e
+                    }
+
+                }
+
                 async go()
                 {
                     try{
 
+                        if(!this.testPage){
+                            throw new Error(`add test page`)
+                        }
+
                         await  this.initPuppeter()
 
-                        await this.page.goto(this.bazeUrl, {waitUntil: 'networkidle0'})
+                        await this.page.goto(this.testPage, {waitUntil: 'networkidle0'})
                         const img = await this.getImgUrl('img[class="sc-iwsKbI jEGYro sc-ifAKCX rZemy"]')
                         const targToDownload = img[0]
 
@@ -252,9 +387,9 @@ class FcCaptcha
 
                             const textErr = await this.getText('div[class="msg sc-gzVnrw jepoPo"]')
 
-                            const textErrInfo = textErr && textErr === '网络故障，请稍后重试' ? 'Network failure, please try again later.' : textErr
+                            const textErrInfo = textErr && textErr === '网络故障，请稍后重试' ? 'network failure, please try again later' : textErr
 
-                            throw new Error(`loading captcha\n${textErr}\nLink:${textErrInfo}`)
+                            throw new Error(textErrInfo)
 
                         }
 
@@ -288,72 +423,42 @@ class FcCaptcha
                         const destination = await this.page.$('div[class="captcha_verify_img--wrapper sc-dnqmqq kOYoOt"]')
                         const db = await destination.boundingBox()
 
-                        const dragX = ob.x + ob.width / 2
+                        const dragXstart = ob.x + ob.width / 2
 
-                        const dragY = ob.y + ob.height / 2
+                        const dragYstart = ob.y + ob.height / 2
 
-                        const finTargetMove = moveX-7
+                        const dragXfin = moveX-7
 
-
-                        await this.page.mouse.move(dragX, dragY)
-                        await this.page.mouse.down()
+                        await this.mouseMove(dragXstart,dragYstart,dragXfin,dragYstart)
 
 
-                        for (let i = 0; i < finTargetMove; i++) {
-
-                            const moveIX = dragX + i
-
-                            const delayMove = this.randomInteger(2, 15)
-
-                            await this.delay(delayMove)
-
-                            await this.page.mouse.move( moveIX, dragY)
-
-                        }
-
-
-                        await this.delay(7)
-                        await this.page.mouse.move( dragX + finTargetMove + 1, dragY)
-
-                        await this.delay(7)
-                        await this.page.mouse.move( dragX + finTargetMove + 2, dragY)
-
-                        await this.delay(7)
-                        await this.page.mouse.move( dragX + finTargetMove + 2, dragY)
-
-                        await this.delay(this.randomInteger(95, 120))
-                        await this.page.mouse.move( dragX + finTargetMove + 3, dragY)
-
-                        await this.delay(this.randomInteger(950, 1206))
-                        await this.page.mouse.move( dragX + finTargetMove + 4, dragY)
-
-                        await this.delay(32)
-                        await this.page.mouse.move( dragX + finTargetMove + 5, dragY)
-
-                        await this.delay(32)
-                        await this.page.mouse.move( dragX + finTargetMove + 5, dragY)
-
-                        await this.delay(47)
-                        await this.page.mouse.move( dragX + finTargetMove + 6, dragY)
-
-                        await this.delay(this.randomInteger(360, 425))
-                        await this.page.mouse.move( dragX + finTargetMove + this.randomInteger(5, 9), dragY)
-
-                        await this.page.mouse.up()
-
-                        /*
-                        await this.page.waitForNavigation({ waitUntil: 'networkidle2' })
-
+                        await this.page.waitFor('div[class="msg sc-gzVnrw flyHfP"]');
 
                         const res = await this.getText('div[class="msg sc-gzVnrw flyHfP"]')
 
-                        console.log({res})
+                        const resInfoCn = res.length > 0 ? res[0] : 'none'
 
-                         */
+                        let resInfoEn
 
+                        switch (resInfoCn) {
+                            case '验证通过':
+                                resInfoEn = 'validation passed'
+                            case '网络故障，请稍后重试':
+                                resInfoEn = 'network failure, please try again later'
+
+                            default:
+                                resInfoEn = resInfoCn
+                        }
+
+
+                      //  await this.page.waitForNavigation({ waitUntil: 'networkidle2' })
+                      //  this.closeBrowser()
+
+                        return resInfoEn
 
                     }catch (e) {
                         console.error(e)
+                        return e
                     }
 
                 }
