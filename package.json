@@ -23,7 +23,7 @@
     "url": "https://github.com/mrzlab630/TikTok-Anti-puzzle-captcha.git"
   },
   "dependencies": {
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "opencv4nodejs": "^5.5.0",
     "puppeteer": "^3.0.4",
     "util": "^0.12.3"
